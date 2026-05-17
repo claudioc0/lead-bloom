@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Loader2, X } from "lucide-react";
 import { TopBar } from "@/components/TopBar";
 import { LeadCard } from "@/components/LeadCard";
 import { MessagePanel } from "@/components/MessagePanel";
@@ -20,15 +20,25 @@ export const Route = createFileRoute("/find-leads")({
 type Language = "Portuguese" | "English" | "Spanish";
 type Country = "Brazil" | "USA" | "Mexico" | "Argentina";
 
+const DEFAULTS = {
+  niche: "All" as Niche | "All",
+  subMin: 1,
+  subMax: 500,
+  freq: "All" as Frequency | "All",
+  language: "Portuguese" as Language,
+  country: "Brazil" as Country,
+};
+
 function FindLeadsPage() {
   const { leads } = useLeads();
-  const [niche, setNiche] = useState<Niche | "All">("All");
-  const [subMax, setSubMax] = useState(500);
-  const [subMin, setSubMin] = useState(1);
-  const [freq, setFreq] = useState<Frequency | "All">("All");
-  const [language, setLanguage] = useState<Language>("Portuguese");
-  const [country, setCountry] = useState<Country>("Brazil");
+  const [niche, setNiche] = useState<Niche | "All">(DEFAULTS.niche);
+  const [subMin, setSubMin] = useState(DEFAULTS.subMin);
+  const [subMax, setSubMax] = useState(DEFAULTS.subMax);
+  const [freq, setFreq] = useState<Frequency | "All">(DEFAULTS.freq);
+  const [language, setLanguage] = useState<Language>(DEFAULTS.language);
+  const [country, setCountry] = useState<Country>(DEFAULTS.country);
   const [active, setActive] = useState<Lead | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const filtered = useMemo(() => {
     return leads.filter((l) => {
@@ -42,14 +52,49 @@ function FindLeadsPage() {
     });
   }, [leads, niche, freq, subMin, subMax, language, country]);
 
+  // simulated discovery estimate
+  const available = Math.max(filtered.length * 4 + Math.round((subMax - subMin) / 10), filtered.length);
+
+  const clear = () => {
+    setNiche(DEFAULTS.niche);
+    setSubMin(DEFAULTS.subMin);
+    setSubMax(DEFAULTS.subMax);
+    setFreq(DEFAULTS.freq);
+    setLanguage(DEFAULTS.language);
+    setCountry(DEFAULTS.country);
+  };
+
+  const search = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1500);
+  };
+
   return (
     <>
       <TopBar title="Find Leads" subtitle="Filter, score, and reach out." />
       <main className="flex-1 p-5 md:p-8">
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
           <aside className="rounded-xl border border-border bg-card p-4">
-            <button className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-              <Search className="h-4 w-4" /> Search Leads
+            <button
+              onClick={search}
+              disabled={loading}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-80"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Searching…
+                </>
+              ) : (
+                <>
+                  <Search className="h-4 w-4" /> Search Leads
+                </>
+              )}
+            </button>
+            <button
+              onClick={clear}
+              className="mb-4 mt-2 inline-flex w-full items-center justify-center gap-1 text-xs text-muted-foreground hover:text-primary"
+            >
+              <X className="h-3 w-3" /> Clear filters
             </button>
 
             <FilterBlock label="Niche">
@@ -65,7 +110,16 @@ function FindLeadsPage() {
               </select>
             </FilterBlock>
 
-            <FilterBlock label={`Subscribers: ${subMin}k – ${subMax}k`}>
+            <FilterBlock
+              label={
+                <span className="flex items-center justify-between">
+                  <span>Subscribers</span>
+                  <span className="font-semibold text-primary normal-case tracking-normal">
+                    {subMin}k — {subMax}k
+                  </span>
+                </span>
+              }
+            >
               <div className="space-y-2">
                 <input
                   type="range"
@@ -129,13 +183,18 @@ function FindLeadsPage() {
           </aside>
 
           <section>
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card/60 px-4 py-2.5">
               <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{filtered.length}</span> channels match your filters
+                Leads available: <span className="font-display text-base font-bold text-primary">~{available}</span>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Showing <span className="font-semibold text-foreground">{filtered.length}</span> in your saved scope
               </p>
             </div>
 
-            {filtered.length === 0 ? (
+            {loading ? (
+              <LoadingGrid />
+            ) : filtered.length === 0 ? (
               <EmptyState />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -153,13 +212,23 @@ function FindLeadsPage() {
   );
 }
 
-function FilterBlock({ label, children }: { label: string; children: React.ReactNode }) {
+function FilterBlock({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="mb-4">
       <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </label>
       {children}
+    </div>
+  );
+}
+
+function LoadingGrid() {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-44 animate-pulse rounded-xl border border-border bg-card/70" />
+      ))}
     </div>
   );
 }
