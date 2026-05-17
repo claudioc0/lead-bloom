@@ -1,4 +1,4 @@
-import { Bookmark, MessageSquarePlus } from "lucide-react";
+import { Bookmark, MessageSquarePlus, Youtube, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useLeads } from "@/context/LeadsContext";
 import { formatSubs, type Lead } from "@/data/mockLeads";
@@ -14,7 +14,15 @@ export function LeadCard({ lead, onGenerate }: { lead: Lead; onGenerate: (l: Lea
       <div className="flex items-start gap-3">
         <LeadAvatar name={lead.name} size={48} />
         <div className="min-w-0 flex-1">
-          <div className="truncate font-display text-base font-semibold">{lead.name}</div>
+          <div className="flex items-center gap-2">
+            <div className="truncate font-display text-base font-semibold">{lead.name}</div>
+            <span
+              title="YouTube channel"
+              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded bg-destructive/15 text-destructive"
+            >
+              <Youtube className="h-3 w-3" />
+            </span>
+          </div>
           <div className="mt-1 inline-flex rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
             {lead.niche}
           </div>
@@ -44,11 +52,12 @@ export function LeadCard({ lead, onGenerate }: { lead: Lead; onGenerate: (l: Lea
           }}
           className={`inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-xs font-medium ${
             isSaved
-              ? "border-[color:var(--teal)]/40 bg-[color:var(--teal)]/10 text-[color:var(--teal)]"
+              ? "border-transparent bg-[color:var(--teal)] text-[color:var(--background)]"
               : "border-border bg-card text-foreground hover:bg-secondary"
           }`}
         >
-          <Bookmark className="h-4 w-4" /> {isSaved ? "Saved" : "Save"}
+          {isSaved ? <Check className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+          {isSaved ? "Saved" : "Save"}
         </button>
       </div>
     </div>

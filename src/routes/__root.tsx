@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
@@ -121,11 +122,20 @@ function RootComponent() {
           <AppSidebar />
           <div className="flex min-w-0 flex-1 flex-col">
             <MobileNav />
-            <Outlet />
+            <PageTransition />
           </div>
         </div>
         <Toaster theme="dark" />
       </LeadsProvider>
     </QueryClientProvider>
+  );
+}
+
+function PageTransition() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  return (
+    <div key={path} className="page-enter flex flex-1 flex-col">
+      <Outlet />
+    </div>
   );
 }
