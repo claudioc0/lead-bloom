@@ -1,0 +1,54 @@
+export type Niche =
+  | "Tech"
+  | "Lifestyle"
+  | "Business"
+  | "Fitness"
+  | "Education"
+  | "Gaming"
+  | "Finance"
+  | "Food";
+
+export type Frequency = "Daily" | "2-3x week" | "Weekly" | "Irregular";
+export type Status = "New" | "Contacted" | "Replied" | "Client";
+
+export type Lead = {
+  id: string;
+  name: string;
+  niche: Niche;
+  subscribers: number;
+  frequency: Frequency;
+  monthlyUploads: number;
+  score: number;
+  status: Status;
+  language: "Portuguese" | "English" | "Spanish";
+  country: "Brazil" | "USA" | "Mexico" | "Argentina";
+  note?: string;
+  addedAt: string;
+};
+
+export const MOCK_LEADS: Lead[] = [
+  { id: "1", name: "Canal do Empreendedor", niche: "Business", subscribers: 45000, frequency: "2-3x week", monthlyUploads: 12, score: 92, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-12" },
+  { id: "2", name: "Fit com Propósito", niche: "Fitness", subscribers: 28000, frequency: "Daily", monthlyUploads: 30, score: 87, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-12" },
+  { id: "3", name: "Tech Simplificado", niche: "Tech", subscribers: 67000, frequency: "2-3x week", monthlyUploads: 10, score: 78, status: "Contacted", language: "Portuguese", country: "Brazil", addedAt: "2025-05-11" },
+  { id: "4", name: "Cozinha da Vó Maria", niche: "Food", subscribers: 12000, frequency: "Weekly", monthlyUploads: 4, score: 65, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-10" },
+  { id: "5", name: "Finanças que Funcionam", niche: "Finance", subscribers: 89000, frequency: "2-3x week", monthlyUploads: 12, score: 94, status: "Replied", language: "Portuguese", country: "Brazil", addedAt: "2025-05-09" },
+  { id: "6", name: "Gamer BR Oficial", niche: "Gaming", subscribers: 34000, frequency: "Daily", monthlyUploads: 28, score: 71, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-09" },
+  { id: "7", name: "Viagem e Liberdade", niche: "Lifestyle", subscribers: 19000, frequency: "Weekly", monthlyUploads: 4, score: 58, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-08" },
+  { id: "8", name: "Dev na Prática", niche: "Tech", subscribers: 52000, frequency: "2-3x week", monthlyUploads: 10, score: 83, status: "Contacted", language: "Portuguese", country: "Brazil", addedAt: "2025-05-07" },
+  { id: "9", name: "Mente Equilibrada", niche: "Education", subscribers: 8000, frequency: "Weekly", monthlyUploads: 4, score: 61, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-07" },
+  { id: "10", name: "Startup do Zero", niche: "Business", subscribers: 41000, frequency: "2-3x week", monthlyUploads: 12, score: 89, status: "Replied", language: "Portuguese", country: "Brazil", addedAt: "2025-05-06" },
+  { id: "11", name: "CrossFit Brasil", niche: "Fitness", subscribers: 23000, frequency: "Daily", monthlyUploads: 26, score: 76, status: "New", language: "Portuguese", country: "Brazil", addedAt: "2025-05-05" },
+  { id: "12", name: "Inglês Acelerado", niche: "Education", subscribers: 156000, frequency: "2-3x week", monthlyUploads: 10, score: 88, status: "Client", language: "Portuguese", country: "Brazil", addedAt: "2025-05-04" },
+];
+
+export const NICHES: Niche[] = ["Tech", "Lifestyle", "Business", "Fitness", "Education", "Gaming", "Finance", "Food"];
+export const FREQUENCIES: Frequency[] = ["Daily", "2-3x week", "Weekly", "Irregular"];
+
+export function formatSubs(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return `${n}`;
+}
+
+export function initials(name: string): string {
+  return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
+}
