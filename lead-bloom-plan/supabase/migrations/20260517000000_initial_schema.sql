@@ -1,0 +1,2 @@
+-- Applied via Supabase MCP (project: cozoxvpdfifvmqukpiyy)
+-- See initial_schema + harden_function_grants migrations on remote.
